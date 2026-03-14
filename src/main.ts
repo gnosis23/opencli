@@ -58,6 +58,17 @@ program.command('synthesize').description('Synthesize CLIs from explore').argume
 program.command('generate').description('One-shot: explore → synthesize → register').argument('<url>').option('--goal <text>').option('--site <name>')
   .action(async (url, opts) => { const { generateCliFromUrl, renderGenerateSummary } = await import('./generate.js'); const r = await generateCliFromUrl({ url, BrowserFactory: PlaywrightMCP, builtinClis: BUILTIN_CLIS, userClis: USER_CLIS, goal: opts.goal, site: opts.site }); console.log(renderGenerateSummary(r)); process.exitCode = r.ok ? 0 : 1; });
 
+program.command('cascade').description('Strategy cascade: find simplest working strategy').argument('<url>').option('--site <name>')
+  .action(async (url, opts) => {
+    const { cascadeProbe, renderCascadeResult } = await import('./cascade.js');
+    const result = await browserSession(PlaywrightMCP, async (page) => {
+      // Navigate to the site first for cookie context
+      try { const siteUrl = new URL(url); await page.goto(`${siteUrl.protocol}//${siteUrl.host}`); await page.wait(2); } catch {}
+      return cascadeProbe(page, url);
+    });
+    console.log(renderCascadeResult(result));
+  });
+
 // ── Dynamic site commands ──────────────────────────────────────────────────
 
 const registry = getRegistry();
