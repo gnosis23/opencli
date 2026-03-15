@@ -1,6 +1,9 @@
 /**
- * Xiaohongshu search — trigger search via Pinia store + XHR interception.
- * Inspired by bb-sites/xiaohongshu/search.js but adapted for opencli pipeline.
+ * Xiaohongshu search — DOM-based extraction from search results page.
+ * The previous Pinia store + XHR interception approach broke because
+ * the API now returns empty items. This version navigates directly to
+ * the search results page and extracts data from rendered DOM elements.
+ * Ref: https://github.com/jackwener/opencli/issues/10
  */
 
 import { cli, Strategy } from '../../registry.js';
@@ -15,57 +18,51 @@ cli({
     { name: 'keyword', required: true, help: 'Search keyword' },
     { name: 'limit', type: 'int', default: 20, help: 'Number of results' },
   ],
-  columns: ['rank', 'title', 'author', 'likes', 'type'],
+  columns: ['rank', 'title', 'author', 'likes'],
   func: async (page, kwargs) => {
-    await page.goto('https://www.xiaohongshu.com');
-    await page.wait(2);
+    const keyword = encodeURIComponent(kwargs.keyword);
+    await page.goto(
+      `https://www.xiaohongshu.com/search_result?keyword=${keyword}&source=web_search_result_notes`
+    );
+    await page.wait(3);
+
+    // Scroll a couple of times to load more results
+    await page.autoScroll({ times: 2 });
 
     const data = await page.evaluate(`
-      (async () => {
-        const app = document.querySelector('#app')?.__vue_app__;
-        const pinia = app?.config?.globalProperties?.$pinia;
-        if (!pinia?._s) return {error: 'Page not ready'};
+      (() => {
+        const notes = document.querySelectorAll('section.note-item');
+        const results = [];
+        notes.forEach(el => {
+          // Skip "related searches" sections
+          if (el.classList.contains('query-note-item')) return;
 
-        const searchStore = pinia._s.get('search');
-        if (!searchStore) return {error: 'Search store not found'};
+          const titleEl = el.querySelector('.title, .note-title, a.title');
+          const nameEl = el.querySelector('.name, .author-name, .nick-name');
+          const likesEl = el.querySelector('.count, .like-count, .like-wrapper .count');
+          const linkEl = el.querySelector('a[href*="/explore/"], a[href*="/search_result/"], a[href*="/note/"]');
 
-        let captured = null;
-        const origOpen = XMLHttpRequest.prototype.open;
-        const origSend = XMLHttpRequest.prototype.send;
-        XMLHttpRequest.prototype.open = function(m, u) { this.__url = u; return origOpen.apply(this, arguments); };
-        XMLHttpRequest.prototype.send = function(b) {
-          if (this.__url?.includes('search/notes')) {
-            const x = this;
-            const orig = x.onreadystatechange;
-            x.onreadystatechange = function() { if (x.readyState === 4 && !captured) { try { captured = JSON.parse(x.responseText); } catch {} } if (orig) orig.apply(this, arguments); };
-          }
-          return origSend.apply(this, arguments);
-        };
+          const href = linkEl?.getAttribute('href') || '';
+          const noteId = href.match(/\\/(?:explore|note)\\/([a-f0-9]+)/)?.[1] || '';
 
-        try {
-          searchStore.mutateSearchValue('${kwargs.keyword}');
-          await searchStore.loadMore();
-          await new Promise(r => setTimeout(r, 800));
-        } finally {
-          XMLHttpRequest.prototype.open = origOpen;
-          XMLHttpRequest.prototype.send = origSend;
-        }
-
-        if (!captured?.success) return {error: captured?.msg || 'Search failed'};
-        return (captured.data?.items || []).map(i => ({
-          title: i.note_card?.display_title || '',
-          type: i.note_card?.type || '',
-          url: 'https://www.xiaohongshu.com/explore/' + i.id,
-          author: i.note_card?.user?.nickname || '',
-          likes: i.note_card?.interact_info?.liked_count || '0',
-        }));
+          results.push({
+            title: (titleEl?.textContent || '').trim(),
+            author: (nameEl?.textContent || '').trim(),
+            likes: (likesEl?.textContent || '0').trim(),
+            url: noteId ? 'https://www.xiaohongshu.com/explore/' + noteId : '',
+          });
+        });
+        return results;
       })()
     `);
 
     if (!Array.isArray(data)) return [];
-    return data.slice(0, kwargs.limit).map((item: any, i: number) => ({
-      rank: i + 1,
-      ...item,
-    }));
+    return data
+      .filter((item: any) => item.title)
+      .slice(0, kwargs.limit)
+      .map((item: any, i: number) => ({
+        rank: i + 1,
+        ...item,
+      }));
   },
 });
