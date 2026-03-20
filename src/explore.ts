@@ -250,11 +250,11 @@ export async function exploreUrl(
            // First: targeted clicks by label (e.g. "字幕", "CC", "评论")
            if (opts.clickLabels?.length) {
              for (const label of opts.clickLabels) {
-               const safeLabel = label.replace(/'/g, "\\'");
+               const safeLabel = JSON.stringify(label);
                await page.evaluate(`
                  (() => {
                    const el = [...document.querySelectorAll('button, [role="button"], [role="tab"], a, span')]
-                     .find(e => e.textContent && e.textContent.trim().includes('${safeLabel}'));
+                     .find(e => e.textContent && e.textContent.trim().includes(${safeLabel}));
                    if (el) el.click();
                  })()
                `);

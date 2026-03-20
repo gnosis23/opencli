@@ -116,7 +116,7 @@ function buildEvaluateScript(url: string, itemPath: string, endpoint: any): stri
 
   return [
     '(async () => {',
-    `  const res = await fetch('${url}', {`,
+    `  const res = await fetch(${JSON.stringify(url)}, {`,
     `    credentials: 'include'`,
     '  });',
     '  const data = await res.json();',
