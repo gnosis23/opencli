@@ -21,10 +21,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: extension/package-lock.json
+
+      - name: Install extension dependencies
+        run: npm ci
+        working-directory: extension
+
+      - name: Build extension
+        run: npm run build
+        working-directory: extension
+
+      - name: Prepare extension package
+        run: |
+          rm -rf extension-package
+          mkdir -p extension-package
+          cp extension/manifest.json extension-package/
+          cp -R extension/dist extension-package/
+          cp -R extension/icons extension-package/
 
       - name: Create Extension ZIP
         run: |
-          cd extension
+          cd extension-package
           zip -r ../opencli-extension.zip .
 
       - name: Create Extension CRX
@@ -33,11 +51,11 @@ jobs:
           if [ -n "${{ secrets.CRX_PRIVATE_KEY }}" ]; then
             echo "Found CRX_PRIVATE_KEY, signing extension..."
             echo "${{ secrets.CRX_PRIVATE_KEY }}" > crx-key.pem
-            crx3 pack extension -o opencli-extension.crx -p crx-key.pem
+            crx3 pack extension-package -o opencli-extension.crx -p crx-key.pem
             rm crx-key.pem
           else
             echo "No CRX_PRIVATE_KEY configured. Generating CRX with a temporary random key..."
-            crx3 pack extension -o opencli-extension.crx
+            crx3 pack extension-package -o opencli-extension.crx
           fi
 
       - name: Upload Artifacts (Action Run)

@@ -11,7 +11,7 @@ import { cli, Strategy } from '../../registry.js';
 import {
   httpDownload,
   sanitizeFilename,
-  detectContentType,
+  formatCookieHeader,
 } from '../../download/index.js';
 import { DownloadProgressTracker, formatBytes } from '../../download/progress.js';
 
@@ -114,7 +114,7 @@ cli({
     }
 
     // Extract cookies for authenticated downloads
-    const cookies = await page.evaluate(`(() => document.cookie)()`);
+    const cookies = formatCookieHeader(await page.getCookies({ domain: 'xiaohongshu.com' }));
 
     // Create output directory
     const outputDir = path.join(output, noteId);
@@ -134,7 +134,7 @@ cli({
 
       try {
         const result = await httpDownload(media.url, destPath, {
-          cookies: typeof cookies === 'string' ? cookies : '',
+          cookies,
           timeout: 60000,
           onProgress: (received, total) => {
             if (progressBar) progressBar.update(received, total);

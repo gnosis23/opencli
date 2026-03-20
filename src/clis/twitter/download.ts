@@ -16,6 +16,7 @@ import {
   sanitizeFilename,
   getTempDir,
   exportCookiesToNetscape,
+  formatCookieHeader,
 } from '../../download/index.js';
 import { DownloadProgressTracker, formatBytes } from '../../download/progress.js';
 
@@ -109,7 +110,8 @@ cli({
     }
 
     // Extract cookies
-    const cookieString = await page.evaluate(`(() => document.cookie)()`);
+    const cookies = await page.getCookies({ domain: 'x.com' });
+    const cookieString = formatCookieHeader(cookies);
 
     // Create output directory
     const outputDir = tweetUrl
@@ -119,23 +121,10 @@ cli({
 
     // Export cookies for yt-dlp
     let cookiesFile: string | undefined;
-    if (typeof cookieString === 'string' && cookieString) {
+    if (cookies.length > 0) {
       const tempDir = getTempDir();
       fs.mkdirSync(tempDir, { recursive: true });
       cookiesFile = path.join(tempDir, `twitter_cookies_${Date.now()}.txt`);
-
-      const cookies = cookieString.split(';').map((c) => {
-        const [name, ...rest] = c.trim().split('=');
-        return {
-          name: name || '',
-          value: rest.join('=') || '',
-          domain: '.x.com',
-          path: '/',
-          secure: true,
-          httpOnly: false,
-        };
-      }).filter((c) => c.name);
-
       exportCookiesToNetscape(cookies, cookiesFile);
     }
 
@@ -173,7 +162,7 @@ cli({
         } else if (media.type === 'image') {
           // Direct HTTP download for images
           result = await httpDownload(media.url, destPath, {
-            cookies: typeof cookieString === 'string' ? cookieString : '',
+            cookies: cookieString,
             timeout: 30000,
             onProgress: (received, total) => {
               if (progressBar) progressBar.update(received, total);
@@ -182,7 +171,7 @@ cli({
         } else {
           // Direct HTTP download for direct video URLs
           result = await httpDownload(media.url, destPath, {
-            cookies: typeof cookieString === 'string' ? cookieString : '',
+            cookies: cookieString,
             timeout: 60000,
             onProgress: (received, total) => {
               if (progressBar) progressBar.update(received, total);

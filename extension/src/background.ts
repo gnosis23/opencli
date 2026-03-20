@@ -234,6 +234,21 @@ async function resolveTabId(tabId?: number): Promise<number> {
   return newTab.id;
 }
 
+async function listAutomationTabs(): Promise<chrome.tabs.Tab[]> {
+  if (automationWindowId === null) return [];
+  try {
+    return await chrome.tabs.query({ windowId: automationWindowId });
+  } catch {
+    automationWindowId = null;
+    return [];
+  }
+}
+
+async function listAutomationWebTabs(): Promise<chrome.tabs.Tab[]> {
+  const tabs = await listAutomationTabs();
+  return tabs.filter((tab) => isWebUrl(tab.url));
+}
+
 async function handleExec(cmd: Command): Promise<Result> {
   if (!cmd.code) return { id: cmd.id, ok: false, error: 'Missing code' };
   const tabId = await resolveTabId(cmd.tabId);
@@ -278,9 +293,8 @@ async function handleNavigate(cmd: Command): Promise<Result> {
 async function handleTabs(cmd: Command): Promise<Result> {
   switch (cmd.op) {
     case 'list': {
-      const tabs = await chrome.tabs.query({});
+      const tabs = await listAutomationWebTabs();
       const data = tabs
-        .filter((t) => isWebUrl(t.url))
         .map((t, i) => ({
           index: i,
           tabId: t.id,
@@ -291,12 +305,13 @@ async function handleTabs(cmd: Command): Promise<Result> {
       return { id: cmd.id, ok: true, data };
     }
     case 'new': {
-      const tab = await chrome.tabs.create({ url: cmd.url, active: true });
+      const windowId = await getAutomationWindow();
+      const tab = await chrome.tabs.create({ windowId, url: cmd.url ?? 'about:blank', active: true });
       return { id: cmd.id, ok: true, data: { tabId: tab.id, url: tab.url } };
     }
     case 'close': {
       if (cmd.index !== undefined) {
-        const tabs = await chrome.tabs.query({});
+        const tabs = await listAutomationWebTabs();
         const target = tabs[cmd.index];
         if (!target?.id) return { id: cmd.id, ok: false, error: `Tab index ${cmd.index} not found` };
         await chrome.tabs.remove(target.id);
@@ -315,7 +330,7 @@ async function handleTabs(cmd: Command): Promise<Result> {
         await chrome.tabs.update(cmd.tabId, { active: true });
         return { id: cmd.id, ok: true, data: { selected: cmd.tabId } };
       }
-      const tabs = await chrome.tabs.query({});
+      const tabs = await listAutomationWebTabs();
       const target = tabs[cmd.index!];
       if (!target?.id) return { id: cmd.id, ok: false, error: `Tab index ${cmd.index} not found` };
       await chrome.tabs.update(target.id, { active: true });
@@ -368,3 +383,11 @@ async function handleCloseWindow(cmd: Command): Promise<Result> {
   }
   return { id: cmd.id, ok: true, data: { closed: true } };
 }
+
+export const __test__ = {
+  handleTabs,
+  getAutomationWindowId: () => automationWindowId,
+  setAutomationWindowId: (windowId: number | null) => {
+    automationWindowId = windowId;
+  },
+};

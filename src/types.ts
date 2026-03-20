@@ -8,6 +8,15 @@
 export interface IPage {
   goto(url: string): Promise<void>;
   evaluate(js: string): Promise<any>;
+  getCookies(opts?: { domain?: string; url?: string }): Promise<Array<{
+    name: string;
+    value: string;
+    domain: string;
+    path?: string;
+    secure?: boolean;
+    httpOnly?: boolean;
+    expirationDate?: number;
+  }>>;
   snapshot(opts?: { interactive?: boolean; compact?: boolean; maxDepth?: number; raw?: boolean }): Promise<any>;
   click(ref: string): Promise<void>;
   typeText(ref: string, text: string): Promise<void>;

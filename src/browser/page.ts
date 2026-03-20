@@ -52,6 +52,11 @@ export class Page implements IPage {
     return sendCommand('exec', { code, ...this._tabOpt() });
   }
 
+  async getCookies(opts: { domain?: string; url?: string } = {}): Promise<any[]> {
+    const result = await sendCommand('cookies', opts);
+    return Array.isArray(result) ? result : [];
+  }
+
   async snapshot(opts: { interactive?: boolean; compact?: boolean; maxDepth?: number; raw?: boolean } = {}): Promise<any> {
     const maxDepth = Math.max(1, Math.min(Number(opts.maxDepth) || 50, 200));
     const code = `

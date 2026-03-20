@@ -1,5 +1,6 @@
 import { afterEach, describe, it, expect, vi } from 'vitest';
 import { BrowserBridge, __test__ } from './browser/index.js';
+import * as daemonClient from './browser/daemon-client.js';
 
 describe('browser helpers', () => {
   it('extracts tab entries from string snapshots', () => {
@@ -121,5 +122,14 @@ describe('BrowserBridge state', () => {
     (mcp as any)._state = 'closing';
 
     await expect(mcp.connect()).rejects.toThrow('Session is closing');
+  });
+
+  it('fails fast when daemon is running but extension is disconnected', async () => {
+    vi.spyOn(daemonClient, 'isExtensionConnected').mockResolvedValue(false);
+    vi.spyOn(daemonClient, 'isDaemonRunning').mockResolvedValue(true);
+
+    const mcp = new BrowserBridge();
+
+    await expect(mcp.connect()).rejects.toThrow('Browser Extension is not connected');
   });
 });

@@ -113,6 +113,14 @@ class CDPPage implements IPage {
     return result.result?.value;
   }
 
+  async getCookies(opts: { domain?: string; url?: string } = {}): Promise<any[]> {
+    const result = await this.bridge.send('Network.getCookies', opts.url ? { urls: [opts.url] } : {});
+    const cookies = Array.isArray(result?.cookies) ? result.cookies : [];
+    return opts.domain
+      ? cookies.filter((cookie: any) => typeof cookie.domain === 'string' && cookie.domain.includes(opts.domain!))
+      : cookies;
+  }
+
   async snapshot(opts?: any): Promise<any> {
     throw new Error('Method not implemented.');
   }

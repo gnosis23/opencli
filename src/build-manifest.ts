@@ -114,7 +114,7 @@ export function parseTsArgsBlock(argsBlock: string): ManifestEntry['args'] {
   let cursor = 0;
 
   while (cursor < argsBlock.length) {
-    const nameMatch = argsBlock.slice(cursor).match(/\{\s*name\s*:\s*['"`](\w+)['"`]/);
+    const nameMatch = argsBlock.slice(cursor).match(/\{\s*name\s*:\s*['"`]([^'"`]+)['"`]/);
     if (!nameMatch || nameMatch.index === undefined) break;
 
     const objectStart = cursor + nameMatch.index;

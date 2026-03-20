@@ -26,6 +26,16 @@ export interface YtdlpOptions {
   onProgress?: (percent: number) => void;
 }
 
+export interface BrowserCookie {
+  name: string;
+  value: string;
+  domain: string;
+  path?: string;
+  secure?: boolean;
+  httpOnly?: boolean;
+  expirationDate?: number;
+}
+
 /**
  * Check if yt-dlp is available in PATH.
  */
@@ -142,14 +152,14 @@ export async function httpDownload(
       // Handle redirects
       if (response.statusCode && response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
         file.close();
-        fs.unlinkSync(tempPath);
-        httpDownload(response.headers.location, destPath, options).then(resolve);
+        if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+        httpDownload(resolveRedirectUrl(url, response.headers.location), destPath, options).then(resolve);
         return;
       }
 
       if (response.statusCode !== 200) {
         file.close();
-        fs.unlinkSync(tempPath);
+        if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
         resolve({ success: false, size: 0, error: `HTTP ${response.statusCode}` });
         return;
       }
@@ -187,11 +197,15 @@ export async function httpDownload(
   });
 }
 
+export function resolveRedirectUrl(currentUrl: string, location: string): string {
+  return new URL(location, currentUrl).toString();
+}
+
 /**
  * Export cookies to Netscape format for yt-dlp.
  */
 export function exportCookiesToNetscape(
-  cookies: Array<{ name: string; value: string; domain: string; path?: string; secure?: boolean; httpOnly?: boolean }>,
+  cookies: BrowserCookie[],
   filePath: string,
 ): void {
   const lines = [
@@ -212,6 +226,10 @@ export function exportCookiesToNetscape(
 
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, lines.join('\n'));
+}
+
+export function formatCookieHeader(cookies: BrowserCookie[]): string {
+  return cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join('; ');
 }
 
 /**

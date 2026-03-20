@@ -115,34 +115,34 @@ Run `opencli list` for the live registry.
 
 | Site | Commands | Mode |
 |------|----------|------|
-| **twitter** | `trending` `bookmarks` `profile` `search` `timeline` `thread` `following` `followers` `notifications` `post` `reply` `delete` `like` `article` `follow` `unfollow` `bookmark` `unbookmark` `download` `accept` `reply-dm` | 🔐 Browser |
-| **reddit** | `hot` `frontpage` `popular` `search` `subreddit` `read` `user` `user-posts` `user-comments` `upvote` `save` `comment` `subscribe` `saved` `upvoted` | 🔐 Browser |
-| **cursor** | `status` `send` `read` `new` `dump` `composer` `model` `extract-code` `ask` `screenshot` `history` `export` | 🖥️ Desktop |
-| **bilibili** | `hot` `search` `me` `favorite` `history` `feed` `subtitle` `dynamic` `ranking` `following` `user-videos` `download` | 🔐 Browser |
-| **codex** | `status` `send` `read` `new` `extract-diff` `model` `ask` `screenshot` `history` `export` | 🖥️ Desktop |
-| **chatwise** | `status` `new` `send` `read` `ask` `model` `history` `export` `screenshot` | 🖥️ Desktop |
-| **notion** | `status` `search` `read` `new` `write` `sidebar` `favorites` `export` | 🖥️ Desktop |
-| **discord-app** | `status` `send` `read` `channels` `servers` `search` `members` | 🖥️ Desktop |
-| **v2ex** | `hot` `latest` `topic` `daily` `me` `notifications` | 🌐 / 🔐 |
-| **xueqiu** | `feed` `hot-stock` `hot` `search` `stock` `watchlist` | 🔐 Browser |
-| **antigravity** | `status` `send` `read` `new` `dump` `extract-code` `model` `watch` | 🖥️ Desktop |
-| **chatgpt** | `status` `new` `send` `read` `ask` | 🖥️ Desktop |
-| **xiaohongshu** | `search` `notifications` `feed` `me` `user` `download` | 🔐 Browser |
-| **apple-podcasts** | `search` `episodes` `top` | 🌐 Public |
-| **xiaoyuzhou** | `podcast` `podcast-episodes` `episode` | 🌐 Public |
-| **zhihu** | `hot` `search` `question` `download` | 🔐 Browser |
-| **youtube** | `search` `video` `transcript` | 🔐 Browser |
-| **boss** | `search` `detail` | 🔐 Browser |
-| **coupang** | `search` `add-to-cart` | 🔐 Browser |
-| **bbc** | `news` | 🌐 Public |
-| **ctrip** | `search` | 🔐 Browser |
-| **github** | `search` | 🌐 Public |
-| **hackernews** | `top` | 🌐 Public |
-| **linkedin** | `search` | 🔐 Browser |
-| **reuters** | `search` | 🔐 Browser |
-| **smzdm** | `search` | 🔐 Browser |
-| **weibo** | `hot` | 🔐 Browser |
-| **yahoo-finance** | `quote` | 🔐 Browser |
+| **twitter** | `trending` `bookmarks` `profile` `search` `timeline` `thread` `following` `followers` `notifications` `post` `reply` `delete` `like` `article` `follow` `unfollow` `bookmark` `unbookmark` `download` `accept` `reply-dm` | Browser |
+| **reddit** | `hot` `frontpage` `popular` `search` `subreddit` `read` `user` `user-posts` `user-comments` `upvote` `save` `comment` `subscribe` `saved` `upvoted` | Browser |
+| **cursor** | `status` `send` `read` `new` `dump` `composer` `model` `extract-code` `ask` `screenshot` `history` `export` | Desktop |
+| **bilibili** | `hot` `search` `me` `favorite` `history` `feed` `subtitle` `dynamic` `ranking` `following` `user-videos` `download` | Browser |
+| **codex** | `status` `send` `read` `new` `extract-diff` `model` `ask` `screenshot` `history` `export` | Desktop |
+| **chatwise** | `status` `new` `send` `read` `ask` `model` `history` `export` `screenshot` | Desktop |
+| **notion** | `status` `search` `read` `new` `write` `sidebar` `favorites` `export` | Desktop |
+| **discord-app** | `status` `send` `read` `channels` `servers` `search` `members` | Desktop |
+| **v2ex** | `hot` `latest` `topic` `daily` `me` `notifications` | Public / Browser |
+| **xueqiu** | `feed` `hot-stock` `hot` `search` `stock` `watchlist` | Browser |
+| **antigravity** | `status` `send` `read` `new` `dump` `extract-code` `model` `watch` | Desktop |
+| **chatgpt** | `status` `new` `send` `read` `ask` | Desktop |
+| **xiaohongshu** | `search` `notifications` `feed` `me` `user` `download` | Browser |
+| **apple-podcasts** | `search` `episodes` `top` | Public |
+| **xiaoyuzhou** | `podcast` `podcast-episodes` `episode` | Public |
+| **zhihu** | `hot` `search` `question` `download` | Browser |
+| **youtube** | `search` `video` `transcript` | Browser |
+| **boss** | `search` `detail` | Browser |
+| **coupang** | `search` `add-to-cart` | Browser |
+| **bbc** | `news` | Public |
+| **ctrip** | `search` | Browser |
+| **github** | `search` | Public |
+| **hackernews** | `top` | Public |
+| **linkedin** | `search` | Browser |
+| **reuters** | `search` | Browser |
+| **smzdm** | `search` | Browser |
+| **weibo** | `hot` | Browser |
+| **yahoo-finance** | `quote` | Browser |
 
 ### Desktop App Adapters
 

@@ -23,6 +23,7 @@ import {
   generateFilename,
   exportCookiesToNetscape,
   getTempDir,
+  formatCookieHeader,
 } from '../../download/index.js';
 import { DownloadProgressTracker, formatBytes } from '../../download/progress.js';
 
@@ -62,9 +63,8 @@ async function mapConcurrent<T, R>(
  */
 async function extractBrowserCookies(page: IPage, domain?: string): Promise<string> {
   try {
-    // Use browser evaluate to get document.cookie
-    const cookieString = await page.evaluate(`(() => document.cookie)()`);
-    return typeof cookieString === 'string' ? cookieString : '';
+    const cookies = await page.getCookies(domain ? { domain } : {});
+    return formatCookieHeader(cookies);
   } catch {
     return '';
   }
@@ -78,20 +78,17 @@ async function extractCookiesArray(
   domain: string,
 ): Promise<Array<{ name: string; value: string; domain: string; path: string; secure: boolean; httpOnly: boolean }>> {
   try {
-    const cookieString = await extractBrowserCookies(page);
-    if (!cookieString) return [];
-
-    return cookieString.split(';').map((c) => {
-      const [name, ...rest] = c.trim().split('=');
-      return {
-        name: name || '',
-        value: rest.join('=') || '',
-        domain,
-        path: '/',
-        secure: true,
-        httpOnly: false,
-      };
-    }).filter((c) => c.name);
+    const cookies = await page.getCookies({ domain });
+    return cookies
+      .filter((cookie) => cookie.name)
+      .map((cookie) => ({
+        name: cookie.name,
+        value: cookie.value,
+        domain: cookie.domain,
+        path: cookie.path ?? '/',
+        secure: cookie.secure ?? false,
+        httpOnly: cookie.httpOnly ?? false,
+      }));
   } catch {
     return [];
   }

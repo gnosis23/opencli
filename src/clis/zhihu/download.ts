@@ -8,7 +8,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { cli, Strategy } from '../../registry.js';
-import { sanitizeFilename, httpDownload } from '../../download/index.js';
+import { sanitizeFilename, httpDownload, formatCookieHeader } from '../../download/index.js';
 import { formatBytes } from '../../download/progress.js';
 
 /**
@@ -178,7 +178,7 @@ cli({
       const imagesDir = path.join(output, 'images');
       fs.mkdirSync(imagesDir, { recursive: true });
 
-      const cookies = await page.evaluate(`(() => document.cookie)()`);
+      const cookies = formatCookieHeader(await page.getCookies({ domain: 'zhihu.com' }));
 
       for (let i = 0; i < data.images.length; i++) {
         const imgUrl = data.images[i];
@@ -188,7 +188,7 @@ cli({
 
         try {
           await httpDownload(imgUrl, imgPath, {
-            cookies: typeof cookies === 'string' ? cookies : '',
+            cookies,
             timeout: 30000,
           });
 

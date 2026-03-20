@@ -7,6 +7,9 @@
  */
 
 import { validateClisWithTarget, renderValidationReport, type ValidationReport } from './validate.js';
+import { spawn } from 'node:child_process';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 export interface VerifyOptions {
   builtinClis: string;
@@ -18,15 +21,73 @@ export interface VerifyOptions {
 export interface VerifyReport {
   ok: boolean;
   validation: ValidationReport;
-  smoke: null;
+  smoke: null | {
+    requested: boolean;
+    executed: boolean;
+    ok: boolean;
+    summary: string;
+  };
 }
 
 export async function verifyClis(opts: VerifyOptions): Promise<VerifyReport> {
   const report = validateClisWithTarget([opts.builtinClis, opts.userClis], opts.target);
-  return { ok: report.ok, validation: report, smoke: null };
+  let smoke: VerifyReport['smoke'] = null;
+  if (opts.smoke) {
+    smoke = await runSmokeTests(opts.builtinClis);
+  }
+  return { ok: report.ok && (smoke?.ok ?? true), validation: report, smoke };
 }
 
 export function renderVerifyReport(report: VerifyReport): string {
-  return renderValidationReport(report.validation);
+  const base = renderValidationReport(report.validation);
+  if (!report.smoke) return base;
+  const status = report.smoke.ok ? 'PASS' : 'FAIL';
+  const mode = report.smoke.executed ? 'executed' : 'skipped';
+  return `${base}\nSmoke: ${status} (${mode}) — ${report.smoke.summary}`;
 }
 
+async function runSmokeTests(builtinClis: string): Promise<NonNullable<VerifyReport['smoke']>> {
+  const projectRoot = path.resolve(builtinClis, '..', '..');
+  const smokeDir = path.join(projectRoot, 'tests', 'smoke');
+
+  if (!fs.existsSync(smokeDir)) {
+    return {
+      requested: true,
+      executed: false,
+      ok: false,
+      summary: 'Smoke tests are unavailable in this package/environment.',
+    };
+  }
+
+  const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+  return new Promise((resolve) => {
+    const child = spawn(npx, ['vitest', 'run', 'tests/smoke/', '--reporter=dot'], {
+      cwd: projectRoot,
+      env: { ...process.env },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    let stderr = '';
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk.toString();
+    });
+
+    child.on('error', (error) => {
+      resolve({
+        requested: true,
+        executed: false,
+        ok: false,
+        summary: `Failed to start smoke tests: ${error.message}`,
+      });
+    });
+
+    child.on('close', (code) => {
+      resolve({
+        requested: true,
+        executed: true,
+        ok: code === 0,
+        summary: code === 0 ? 'tests/smoke passed' : (stderr.trim() || `vitest exited with code ${code}`),
+      });
+    });
+  });
+}

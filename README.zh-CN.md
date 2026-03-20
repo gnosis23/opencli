@@ -116,34 +116,34 @@ npm install -g @jackwener/opencli@latest
 
 | 站点 | 命令 | 模式 |
 |------|------|------|
-| **twitter** | `trending` `bookmarks` `profile` `search` `timeline` `thread` `following` `followers` `notifications` `post` `reply` `delete` `like` `article` `follow` `unfollow` `bookmark` `unbookmark` `download` `accept` `reply-dm` | 🔐 浏览器 |
-| **reddit** | `hot` `frontpage` `popular` `search` `subreddit` `read` `user` `user-posts` `user-comments` `upvote` `save` `comment` `subscribe` `saved` `upvoted` | 🔐 浏览器 |
-| **cursor** | `status` `send` `read` `new` `dump` `composer` `model` `extract-code` `ask` `screenshot` `history` `export` | 🖥️ 桌面端 |
-| **bilibili** | `hot` `search` `me` `favorite` `history` `feed` `subtitle` `dynamic` `ranking` `following` `user-videos` `download` | 🔐 浏览器 |
-| **codex** | `status` `send` `read` `new` `extract-diff` `model` `ask` `screenshot` `history` `export` | 🖥️ 桌面端 |
-| **chatwise** | `status` `new` `send` `read` `ask` `model` `history` `export` `screenshot` | 🖥️ 桌面端 |
-| **notion** | `status` `search` `read` `new` `write` `sidebar` `favorites` `export` | 🖥️ 桌面端 |
-| **discord-app** | `status` `send` `read` `channels` `servers` `search` `members` | 🖥️ 桌面端 |
-| **v2ex** | `hot` `latest` `topic` `daily` `me` `notifications` | 🌐 / 🔐 |
-| **xueqiu** | `feed` `hot-stock` `hot` `search` `stock` `watchlist` | 🔐 浏览器 |
-| **antigravity** | `status` `send` `read` `new` `dump` `extract-code` `model` `watch` | 🖥️ 桌面端 |
-| **chatgpt** | `status` `new` `send` `read` `ask` | 🖥️ 桌面端 |
-| **xiaohongshu** | `search` `notifications` `feed` `me` `user` `download` | 🔐 浏览器 |
-| **apple-podcasts** | `search` `episodes` `top` | 🌐 公开 |
-| **xiaoyuzhou** | `podcast` `podcast-episodes` `episode` | 🌐 公开 |
-| **zhihu** | `hot` `search` `question` `download` | 🔐 浏览器 |
-| **youtube** | `search` `video` `transcript` | 🔐 浏览器 |
-| **boss** | `search` `detail` | 🔐 浏览器 |
-| **coupang** | `search` `add-to-cart` | 🔐 浏览器 |
-| **bbc** | `news` | 🌐 公共 API |
-| **ctrip** | `search` | 🔐 浏览器 |
-| **github** | `search` | 🌐 公共 API |
-| **hackernews** | `top` | 🌐 公共 API |
-| **linkedin** | `search` | 🔐 浏览器 |
-| **reuters** | `search` | 🔐 浏览器 |
-| **smzdm** | `search` | 🔐 浏览器 |
-| **weibo** | `hot` | 🔐 浏览器 |
-| **yahoo-finance** | `quote` | 🔐 浏览器 |
+| **twitter** | `trending` `bookmarks` `profile` `search` `timeline` `thread` `following` `followers` `notifications` `post` `reply` `delete` `like` `article` `follow` `unfollow` `bookmark` `unbookmark` `download` `accept` `reply-dm` | 浏览器 |
+| **reddit** | `hot` `frontpage` `popular` `search` `subreddit` `read` `user` `user-posts` `user-comments` `upvote` `save` `comment` `subscribe` `saved` `upvoted` | 浏览器 |
+| **cursor** | `status` `send` `read` `new` `dump` `composer` `model` `extract-code` `ask` `screenshot` `history` `export` | 桌面端 |
+| **bilibili** | `hot` `search` `me` `favorite` `history` `feed` `subtitle` `dynamic` `ranking` `following` `user-videos` `download` | 浏览器 |
+| **codex** | `status` `send` `read` `new` `extract-diff` `model` `ask` `screenshot` `history` `export` | 桌面端 |
+| **chatwise** | `status` `new` `send` `read` `ask` `model` `history` `export` `screenshot` | 桌面端 |
+| **notion** | `status` `search` `read` `new` `write` `sidebar` `favorites` `export` | 桌面端 |
+| **discord-app** | `status` `send` `read` `channels` `servers` `search` `members` | 桌面端 |
+| **v2ex** | `hot` `latest` `topic` `daily` `me` `notifications` | 公开 / 浏览器 |
+| **xueqiu** | `feed` `hot-stock` `hot` `search` `stock` `watchlist` | 浏览器 |
+| **antigravity** | `status` `send` `read` `new` `dump` `extract-code` `model` `watch` | 桌面端 |
+| **chatgpt** | `status` `new` `send` `read` `ask` | 桌面端 |
+| **xiaohongshu** | `search` `notifications` `feed` `me` `user` `download` | 浏览器 |
+| **apple-podcasts** | `search` `episodes` `top` | 公开 |
+| **xiaoyuzhou** | `podcast` `podcast-episodes` `episode` | 公开 |
+| **zhihu** | `hot` `search` `question` `download` | 浏览器 |
+| **youtube** | `search` `video` `transcript` | 浏览器 |
+| **boss** | `search` `detail` | 浏览器 |
+| **coupang** | `search` `add-to-cart` | 浏览器 |
+| **bbc** | `news` | 公共 API |
+| **ctrip** | `search` | 浏览器 |
+| **github** | `search` | 公共 API |
+| **hackernews** | `top` | 公共 API |
+| **linkedin** | `search` | 浏览器 |
+| **reuters** | `search` | 浏览器 |
+| **smzdm** | `search` | 浏览器 |
+| **weibo** | `hot` | 浏览器 |
+| **yahoo-finance** | `quote` | 浏览器 |
 
 ### 桌面应用适配器
 

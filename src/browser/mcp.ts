@@ -35,7 +35,7 @@ export class BrowserBridge {
     this._state = 'connecting';
 
     try {
-      await this._ensureDaemon();
+      await this._ensureDaemon(opts.timeout);
       this._page = new Page();
       this._state = 'connected';
       return this._page;
@@ -54,8 +54,16 @@ export class BrowserBridge {
     this._state = 'closed';
   }
 
-  private async _ensureDaemon(): Promise<void> {
-    if (await isDaemonRunning()) return;
+  private async _ensureDaemon(timeoutSeconds?: number): Promise<void> {
+    const timeoutMs = Math.max(1, timeoutSeconds ?? Math.ceil(DAEMON_SPAWN_TIMEOUT / 1000)) * 1000;
+
+    if (await isExtensionConnected()) return;
+    if (await isDaemonRunning()) {
+      throw new Error(
+        'Daemon is running but the Browser Extension is not connected.\n' +
+        'Please install and enable the opencli Browser Bridge extension in Chrome.',
+      );
+    }
 
     // Find daemon relative to this file — works for both:
     //   npx tsx src/main.ts  → src/browser/mcp.ts  → src/daemon.ts
@@ -85,7 +93,7 @@ export class BrowserBridge {
     this._daemonProc.unref();
 
     // Wait for daemon to be ready AND extension to connect
-    const deadline = Date.now() + DAEMON_SPAWN_TIMEOUT;
+    const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       await new Promise(resolve => setTimeout(resolve, 300));
       if (await isExtensionConnected()) return;

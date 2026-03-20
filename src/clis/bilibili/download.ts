@@ -17,6 +17,7 @@ import {
   sanitizeFilename,
   getTempDir,
   exportCookiesToNetscape,
+  formatCookieHeader,
 } from '../../download/index.js';
 import { DownloadProgressTracker, formatBytes } from '../../download/progress.js';
 
@@ -63,30 +64,18 @@ cli({
     const title = sanitizeFilename(data?.title || 'video');
 
     // Extract cookies for authenticated downloads
-    const cookieString = await page.evaluate(`(() => document.cookie)()`);
+    const cookies = await page.getCookies({ domain: 'bilibili.com' });
+    const cookieString = formatCookieHeader(cookies);
 
     // Create output directory
     fs.mkdirSync(output, { recursive: true });
 
     // Export cookies to Netscape format for yt-dlp
     let cookiesFile: string | undefined;
-    if (typeof cookieString === 'string' && cookieString) {
+    if (cookies.length > 0) {
       const tempDir = getTempDir();
       fs.mkdirSync(tempDir, { recursive: true });
       cookiesFile = path.join(tempDir, `bilibili_cookies_${Date.now()}.txt`);
-
-      const cookies = cookieString.split(';').map((c) => {
-        const [name, ...rest] = c.trim().split('=');
-        return {
-          name: name || '',
-          value: rest.join('=') || '',
-          domain: '.bilibili.com',
-          path: '/',
-          secure: true,
-          httpOnly: false,
-        };
-      }).filter((c) => c.name);
-
       exportCookiesToNetscape(cookies, cookiesFile);
     }
 

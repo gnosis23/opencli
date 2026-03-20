@@ -25,4 +25,40 @@ describe('parseTsArgsBlock', () => {
       },
     ]);
   });
+
+  it('keeps hyphenated arg names from TS adapters', () => {
+    const args = parseTsArgsBlock(`
+      {
+        name: 'tweet-url',
+        help: 'Single tweet URL to download',
+      },
+      {
+        name: 'download-images',
+        type: 'boolean',
+        default: false,
+        help: 'Download images locally',
+      },
+    `);
+
+    expect(args).toEqual([
+      {
+        name: 'tweet-url',
+        type: 'str',
+        default: undefined,
+        required: false,
+        positional: undefined,
+        help: 'Single tweet URL to download',
+        choices: undefined,
+      },
+      {
+        name: 'download-images',
+        type: 'boolean',
+        default: false,
+        required: false,
+        positional: undefined,
+        help: 'Download images locally',
+        choices: undefined,
+      },
+    ]);
+  });
 });
