@@ -181,7 +181,7 @@ brew install yt-dlp
 
 ```bash
 # Download images/videos from Xiaohongshu note
-opencli xiaohongshu download --note-id abc123 --output ./xhs
+opencli xiaohongshu download --note_id abc123 --output ./xhs
 
 # Download Bilibili video (requires yt-dlp)
 opencli bilibili download --bvid BV1xxx --output ./bilibili

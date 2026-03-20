@@ -2,7 +2,7 @@
  * Xiaohongshu download — download images and videos from a note.
  *
  * Usage:
- *   opencli xiaohongshu download --note-id abc123 --output ./xhs
+ *   opencli xiaohongshu download --note_id abc123 --output ./xhs
  */
 
 import * as fs from 'node:fs';
