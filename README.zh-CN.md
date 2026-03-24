@@ -95,6 +95,21 @@ opencli list  # 可以在任何地方使用了！
 npm install -g @jackwener/opencli@latest
 ```
 
+### Shell自动补全
+
+选择合适的Shell：
+
+```bash
+# Bash completion for opencli
+echo 'eval "$(opencli completion bash)"' >> ~/.bashrc
+
+# Zsh completion for opencli
+echo 'eval "$(opencli completion zsh)"' >> ~/.zshrc
+
+# Fish completion for opencli
+echo 'opencli completion fish | source' >> ~/.config/fish/config.fish
+```
+
 ## 内置命令
 
 运行 `opencli list` 查看完整注册表。

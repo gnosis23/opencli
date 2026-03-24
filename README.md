@@ -93,6 +93,21 @@ opencli list  # Now you can use it anywhere!
 npm install -g @jackwener/opencli@latest
 ```
 
+### Shell Completion
+
+pick the right one for your shell:
+
+```bash
+# Bash completion for opencli
+echo 'eval "$(opencli completion bash)"' >> ~/.bashrc
+
+# Zsh completion for opencli
+echo 'eval "$(opencli completion zsh)"' >> ~/.zshrc
+
+# Fish completion for opencli
+echo 'opencli completion fish | source' >> ~/.config/fish/config.fish
+```
+
 ## Built-in Commands
 
 Run `opencli list` for the live registry.
